@@ -17,6 +17,7 @@ Usage:
     hermes cron                # Manage cron jobs
     hermes cron list           # List cron jobs
     hermes cron status         # Check if cron scheduler is running
+    hermes marconi             # Manage continuous Marconi autoresearch supervisor
     hermes doctor              # Check configuration and dependencies
     hermes honcho setup                    # Configure Honcho AI memory integration
     hermes honcho status                   # Show Honcho config and connection status
@@ -2315,6 +2316,12 @@ def cmd_cron(args):
     cron_command(args)
 
 
+def cmd_marconi(args):
+    """Manage the continuous Marconi autoresearch supervisor."""
+    from hermes_cli.marconi_supervisor import marconi_command
+    marconi_command(args)
+
+
 def cmd_doctor(args):
     """Check configuration and dependencies."""
     from hermes_cli.doctor import run_doctor
@@ -3408,6 +3415,28 @@ For more help on a command:
     cron_subparsers.add_parser("tick", help="Run due jobs once and exit")
 
     cron_parser.set_defaults(func=cmd_cron)
+
+    # =========================================================================
+    # marconi supervisor command
+    # =========================================================================
+    marconi_parser = subparsers.add_parser(
+        "marconi",
+        help="Manage the continuous Marconi autoresearch supervisor",
+        description="Start, stop, inspect, and attach to the tmux-backed Marconi autoresearch supervisor",
+    )
+    marconi_parser.add_argument(
+        "marconi_action",
+        nargs="?",
+        default="status",
+        choices=["start", "stop", "restart", "status", "attach", "tail", "paths"],
+        help="Action to perform (default: status)",
+    )
+    marconi_parser.add_argument(
+        "--workspace",
+        default="/workspace/autoresearch",
+        help="Marconi autoresearch workspace path (default: /workspace/autoresearch)",
+    )
+    marconi_parser.set_defaults(func=cmd_marconi)
     
     # =========================================================================
     # doctor command
